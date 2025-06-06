@@ -6,6 +6,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Net;
 using System.Numerics;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -14,16 +15,14 @@ namespace TP4___Calendrier
 {
     internal class Calendrier
     {
-        enum NomsMois {Janvier, Fevrier, Mars, Avril, Mai, Juin,
+        enum NomsMois {Janvier = 1, Fevrier, Mars, Avril, Mai, Juin,
             Juillet, Aout, Septembre, Octobre, Novembre, Decembre };
 
-        static NomsMois? Mois { get; set; } //Quel statut lui donner ? Est ce bon ?
+        static NomsMois? Mois { get; set; }
 
-                 // Champ privé en lecture seule
-        private static readonly string[] jours = { "Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di" };
+        private readonly static string[] Jours = { "Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di" };
 
-        // Propriété publique en lecture seule
-        public IReadOnlyList<string> JourSemaine => jours;
+        static int[]? NombreJours { get; set; }
 
         static public void LancerProgramme(string[] args)
         {
@@ -31,7 +30,7 @@ namespace TP4___Calendrier
             AfficherMois(numValidation);
         }
 
-        static void ValiderArguments(string[] args, out int numValidation)
+        static private void ValiderArguments(string[] args, out int numValidation)
         {
             string argMois = "";
             numValidation = -1;
@@ -58,15 +57,9 @@ namespace TP4___Calendrier
                             {
                                 argMois = args[++i];
 
-                                //Vérifie si numero de mois est entré directement
-                                if (int.TryParse(argMois, out int numeroMois) && numeroMois >= 1 && numeroMois <= 12)
+                                if (Enum.TryParse(typeof(NomsMois), argMois, true, out object? nomMois) && Enum.IsDefined(typeof(NomsMois), nomMois))
                                 {
-                                    numValidation = numeroMois;
-                                }
-                                //Vérifie si nom du mois est entré directement
-                                else if (Enum.TryParse(typeof(NomsMois), argMois, true, out object? NomMois) && numeroMois != 0)
-                                {
-                                    numValidation = (int)NomMois + 1;
+                                    numValidation = (int)nomMois;
                                 }
                                 //Si erreur
                                 else
@@ -100,7 +93,7 @@ namespace TP4___Calendrier
             }
         }
 
-        static void AfficherMois(int numValidation)
+        static private void AfficherMois(int numValidation)
         {
             if (numValidation == 0)
             {
@@ -109,23 +102,23 @@ namespace TP4___Calendrier
             else if (numValidation == -1)
             {
                 DemanderMois();
-                Console.WriteLine($"Mon mois est {Mois} et le numero de validation {numValidation}");
-                // ++ Afficher calendrier
+                DeterminerJoursMois();
+                AfficherCalendrier();
             }
             else if (numValidation >= 1 && numValidation <= 12)
             {
-                Mois = (NomsMois)(numValidation - 1);
-                Console.WriteLine($"Mon mois est {Mois} et le numero de validation {numValidation}");
-                // ++ Afficher calendrier
+                Mois = (NomsMois)(numValidation);
+                DeterminerJoursMois();
+                AfficherCalendrier();
             }
-            else
+            else /*Si pas d'arguments*/
             {
-                Console.WriteLine($"Mon mois est {Mois} et le numero de validation {numValidation}");
-                // ++ Afficher calendrier
+                DeterminerJoursMois();
+                AfficherCalendrier();
             }
         }
 
-        static void AfficherAide()
+        static private void AfficherAide()
         {
             Console.WriteLine("Instruction d'utilisation: " +
                 "\n\n\tPour entrer des arguments : inscrivez -m ou --mois pour le mois" +
@@ -134,7 +127,7 @@ namespace TP4___Calendrier
                 "\n\n\tPour afficher le menu aide : inscrivez -h ou --help");
         }
 
-        static void DemanderMois()
+        static private void DemanderMois()
         {
             string? saisieUser;
      
@@ -151,7 +144,7 @@ namespace TP4___Calendrier
                     //Utilisateur rentre un numero
                     if (int.TryParse(saisieUser, out int numMois) && numMois >= 1 && numMois <= 12)
                     {
-                        Mois = (NomsMois)(numMois - 1);
+                        Mois = (NomsMois)(numMois);
                         moisValide = true;
                     }
                     //Utilisateur rentre une chaine
@@ -167,6 +160,43 @@ namespace TP4___Calendrier
                     }
                 }
             } while (!moisValide == true);
+        }
+
+        static private void DeterminerJoursMois()
+        {
+            if (Mois == NomsMois.Fevrier)
+            {
+                NombreJours = Enumerable.Range(1, 28).ToArray();
+            }
+            else if (Mois == NomsMois.Avril || Mois == NomsMois.Juin || Mois == NomsMois.Septembre || Mois == NomsMois.Novembre)
+            {
+                NombreJours = Enumerable.Range(1, 30).ToArray();
+            }
+            else
+            {
+                NombreJours = Enumerable.Range(1, 31).ToArray();
+            }
+        }
+
+        static private void DeterminerJourSemaine()
+        {
+            if (Mois == NomsMois.Janvier)
+            { 
+                // Peut etre faire mois par mois pour dire au bout de combien de case afficher le mois par rapport au jour
+            }
+        }
+
+        static private void AfficherCalendrier()
+        {
+            Console.WriteLine($"\n{Mois} 2025" +
+            $"\n{string.Join(" ", Jours)}");
+
+            //Determiner comment afficher le mois, genre tous les 7 jours faire \n
+            for (int i = 0; i < NombreJours?.Length; i++)
+            {
+                Console.Write($"{string.Join(" ", NombreJours[i])}");
+            }
+            Console.WriteLine();
         }
     }
 }

@@ -1,8 +1,7 @@
 {
   "profiles": {
     "TP4 - Calendrier": {
-      "commandName": "Project",
-      "commandLineArgs": "-m 99"
+      "commandName": "Project"
     }
   }
 }
