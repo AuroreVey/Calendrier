@@ -22,7 +22,7 @@ namespace TP4___Calendrier
 
         private readonly static string[] Jours = { "Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di" };
 
-        static int[]? NombreJours { get; set; }
+        static string[]? NombreJours { get; set; }
 
         static public void LancerProgramme(string[] args)
         {
@@ -103,18 +103,21 @@ namespace TP4___Calendrier
             {
                 DemanderMois();
                 DeterminerJoursMois();
-                AfficherCalendrier();
+                AffichageJourCommencement(out string espacement, out string arret);
+                AfficherCalendrier(espacement, arret);
             }
             else if (numValidation >= 1 && numValidation <= 12)
             {
                 Mois = (NomsMois)(numValidation);
                 DeterminerJoursMois();
-                AfficherCalendrier();
+                AffichageJourCommencement(out string espacement, out string arret);
+                AfficherCalendrier(espacement, arret);
             }
             else /*Si pas d'arguments*/
             {
                 DeterminerJoursMois();
-                AfficherCalendrier();
+                AffichageJourCommencement(out string espacement, out string arret);
+                AfficherCalendrier(espacement, arret);
             }
         }
 
@@ -166,37 +169,108 @@ namespace TP4___Calendrier
         {
             if (Mois == NomsMois.Fevrier)
             {
-                NombreJours = Enumerable.Range(1, 28).ToArray();
+                NombreJours = Enumerable.Range(1, 28).Select(nombre => nombre.ToString()).ToArray();
             }
             else if (Mois == NomsMois.Avril || Mois == NomsMois.Juin || Mois == NomsMois.Septembre || Mois == NomsMois.Novembre)
             {
-                NombreJours = Enumerable.Range(1, 30).ToArray();
+                NombreJours = Enumerable.Range(1, 30).Select(nombre => nombre.ToString()).ToArray();
             }
             else
             {
-                NombreJours = Enumerable.Range(1, 31).ToArray();
+                NombreJours = Enumerable.Range(1, 31).Select(nombre => nombre.ToString()).ToArray();
             }
         }
 
-        static private void DeterminerJourSemaine()
+        static private void AffichageJourCommencement(out string espacement, out string arret)
         {
-            if (Mois == NomsMois.Janvier)
-            { 
-                // Peut etre faire mois par mois pour dire au bout de combien de case afficher le mois par rapport au jour
+            if (Mois == NomsMois.Septembre || Mois == NomsMois.Decembre) //Lundi
+            {
+                espacement = "";
+                arret = NombreJours[6];
+            }
+            else if (Mois == NomsMois.Avril || Mois == NomsMois.Juillet) //Mardi
+            {
+                espacement = "  ";
+                arret = NombreJours[5];
+            }
+            else if (Mois == NomsMois.Janvier || Mois == NomsMois.Octobre) //Mercredi
+            {
+                espacement = "   ";
+                arret = NombreJours[4];
+            }
+            else if (Mois == NomsMois.Mai) //Jeudi
+            {
+                espacement = "    ";
+                arret = NombreJours[3];
+            }
+            else if (Mois == NomsMois.Aout) //Vendredi
+            {
+                espacement = "     ";
+                arret = NombreJours[2];
+            }
+            else if (Mois == NomsMois.Juin) //Dimanche
+            {
+                espacement = "       ";
+                arret = NombreJours[0];
+            }
+            else//Samedi
+            {
+                espacement = "         ";
+                arret = NombreJours[1];
             }
         }
 
-        static private void AfficherCalendrier()
+        static private void AfficherCalendrier(string espacement, string arret)
         {
+
             Console.WriteLine($"\n{Mois} 2025" +
-            $"\n{string.Join(" ", Jours)}");
+            $"\n{string.Join(" ", Jours)}" +
+            $"\n{espacement}");
+
+            for (int i = 0; i < NombreJours.Length; i++)
+            {
+                if (NombreJours[i] == arret)
+                {
+                    Console.Write($" {NombreJours[i]}\n");
+                }
+                else
+                {
+                    Console.Write($" {NombreJours[i]}");
+                }
+            }
+
+
+            //BONNE VOIE ajuster les espacements dans affichagejourcommencement et les jours d arrets
+
+
+
+
 
             //Determiner comment afficher le mois, genre tous les 7 jours faire \n
-            for (int i = 0; i < NombreJours?.Length; i++)
-            {
-                Console.Write($"{string.Join(" ", NombreJours[i])}");
-            }
-            Console.WriteLine();
+
+            //for (int i = 0; i < NombreJours?.Length - 1; i++)
+            //{
+
+            //    if (NombreJours?[i] == NombreJours?[7] || NombreJours?[i] == NombreJours?[14] || NombreJours[i] == NombreJours[21] || NombreJours[i] == NombreJours[28])
+            //    {
+            //        Console.Write($"\n  {string.Join("", NombreJours[i])}");
+            //    }
+            //    //voir le nombre d espace apres
+            //    else
+            //    {
+            //        Console.Write($"  {string.Join("", NombreJours[i])}");
+            //    }
+            //}
+            //Console.WriteLine();
+
+            //string[] joursEtMois = new string[NombreJours];
+
+            //for (int i = 0; i < NombreJours?.Length; i++)
+            //{
+            //    NombreJours[i] = Jours[i % 7];
+            //}
+
+            //Console.Write(string.Join(" ", NombreJours));
         }
     }
 }
