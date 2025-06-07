@@ -15,14 +15,17 @@ namespace TP4___Calendrier
 {
     internal class Calendrier
     {
-        enum NomsMois {Janvier = 1, Fevrier, Mars, Avril, Mai, Juin,
-            Juillet, Aout, Septembre, Octobre, Novembre, Decembre };
+        enum NomsMois
+        {
+            Janvier = 1, Fevrier, Mars, Avril, Mai, Juin,
+            Juillet, Aout, Septembre, Octobre, Novembre, Decembre
+        };
 
         static NomsMois? Mois { get; set; }
 
         private readonly static string[] Jours = { "Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di" };
 
-        static string[]? NombreJours { get; set; }
+        static int[] NombreJours = Enumerable.Range(1, 31).ToArray();
 
         static public void LancerProgramme(string[] args)
         {
@@ -103,20 +106,20 @@ namespace TP4___Calendrier
             {
                 DemanderMois();
                 DeterminerJoursMois();
-                AffichageJourCommencement(out string espacement, out string arret);
+                AffichageJourCommencement(out string espacement, out int arret);
                 AfficherCalendrier(espacement, arret);
             }
             else if (numValidation >= 1 && numValidation <= 12)
             {
                 Mois = (NomsMois)(numValidation);
                 DeterminerJoursMois();
-                AffichageJourCommencement(out string espacement, out string arret);
+                AffichageJourCommencement(out string espacement, out int arret);
                 AfficherCalendrier(espacement, arret);
             }
             else /*Si pas d'arguments*/
             {
                 DeterminerJoursMois();
-                AffichageJourCommencement(out string espacement, out string arret);
+                AffichageJourCommencement(out string espacement, out int arret);
                 AfficherCalendrier(espacement, arret);
             }
         }
@@ -133,7 +136,7 @@ namespace TP4___Calendrier
         static private void DemanderMois()
         {
             string? saisieUser;
-     
+
             bool moisValide = false;
 
             do
@@ -169,19 +172,19 @@ namespace TP4___Calendrier
         {
             if (Mois == NomsMois.Fevrier)
             {
-                NombreJours = Enumerable.Range(1, 28).Select(nombre => nombre.ToString()).ToArray();
+                NombreJours = Enumerable.Range(1, 28).ToArray();
             }
             else if (Mois == NomsMois.Avril || Mois == NomsMois.Juin || Mois == NomsMois.Septembre || Mois == NomsMois.Novembre)
             {
-                NombreJours = Enumerable.Range(1, 30).Select(nombre => nombre.ToString()).ToArray();
+                NombreJours = Enumerable.Range(1, 30).ToArray();
             }
             else
             {
-                NombreJours = Enumerable.Range(1, 31).Select(nombre => nombre.ToString()).ToArray();
+                NombreJours = Enumerable.Range(1, 31).ToArray();
             }
         }
 
-        static private void AffichageJourCommencement(out string espacement, out string arret)
+        static private void AffichageJourCommencement(out string espacement, out int arret)
         {
             if (Mois == NomsMois.Septembre || Mois == NomsMois.Decembre) //Lundi
             {
@@ -190,40 +193,40 @@ namespace TP4___Calendrier
             }
             else if (Mois == NomsMois.Avril || Mois == NomsMois.Juillet) //Mardi
             {
-                espacement = "  ";
+                espacement = "   ";
                 arret = NombreJours[5];
             }
             else if (Mois == NomsMois.Janvier || Mois == NomsMois.Octobre) //Mercredi
             {
-                espacement = "   ";
+                espacement = "      ";
                 arret = NombreJours[4];
             }
             else if (Mois == NomsMois.Mai) //Jeudi
             {
-                espacement = "    ";
+                espacement = "\t ";
                 arret = NombreJours[3];
             }
             else if (Mois == NomsMois.Aout) //Vendredi
             {
-                espacement = "     ";
+                espacement = "\t    ";
                 arret = NombreJours[2];
             }
             else if (Mois == NomsMois.Juin) //Dimanche
             {
-                espacement = "       ";
+                espacement = "\t\t  ";
                 arret = NombreJours[0];
             }
             else//Samedi
             {
-                espacement = "         ";
+                espacement = "\t       ";
                 arret = NombreJours[1];
             }
         }
 
-        static private void AfficherCalendrier(string espacement, string arret)
+        static private void AfficherCalendrier(string espacement, int arret)
         {
 
-            Console.WriteLine($"\n{Mois} 2025" +
+            Console.Write($"\n{Mois} 2025" +
             $"\n{string.Join(" ", Jours)}" +
             $"\n{espacement}");
 
@@ -233,44 +236,33 @@ namespace TP4___Calendrier
                 {
                     Console.Write($" {NombreJours[i]}\n");
                 }
+                else if (NombreJours[i] == arret + 7)
+                {
+                    if (NombreJours[i] >= 1 && NombreJours[i] <= 9)
+                    {
+                        Console.Write($" {NombreJours[i]}\n");
+                    }
+                    else
+                    {
+                        Console.Write($"{NombreJours[i]}\n");
+                    }
+                }
+                else if (NombreJours[i] == arret + 14 || NombreJours[i] == arret + 21 || NombreJours[i] == arret + 28)
+                {
+                    Console.Write($"{NombreJours[i]}\n");
+                }
                 else
                 {
-                    Console.Write($" {NombreJours[i]}");
+                    if (NombreJours[i] >= 1 && NombreJours[i] <= 9)
+                    {
+                        Console.Write($" {NombreJours[i]} ");
+                    }
+                    else
+                    {
+                        Console.Write($"{NombreJours[i]} ");
+                    }
                 }
             }
-
-
-            //BONNE VOIE ajuster les espacements dans affichagejourcommencement et les jours d arrets
-
-
-
-
-
-            //Determiner comment afficher le mois, genre tous les 7 jours faire \n
-
-            //for (int i = 0; i < NombreJours?.Length - 1; i++)
-            //{
-
-            //    if (NombreJours?[i] == NombreJours?[7] || NombreJours?[i] == NombreJours?[14] || NombreJours[i] == NombreJours[21] || NombreJours[i] == NombreJours[28])
-            //    {
-            //        Console.Write($"\n  {string.Join("", NombreJours[i])}");
-            //    }
-            //    //voir le nombre d espace apres
-            //    else
-            //    {
-            //        Console.Write($"  {string.Join("", NombreJours[i])}");
-            //    }
-            //}
-            //Console.WriteLine();
-
-            //string[] joursEtMois = new string[NombreJours];
-
-            //for (int i = 0; i < NombreJours?.Length; i++)
-            //{
-            //    NombreJours[i] = Jours[i % 7];
-            //}
-
-            //Console.Write(string.Join(" ", NombreJours));
         }
     }
 }
